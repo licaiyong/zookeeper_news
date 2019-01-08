@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url:"findAllCategory.do",
+                type:"post",
+                data:{},
+                dataType:"json",
+                success:function (obj) {
+                    var str="";
+                    $("[name=categoryId]").empty();
+                    str+="<option value=''>全部</option>";
+                    $.each(obj,function (i,item) {
+                        str+="<option value='"+item.id+"'>"+item.name+"</option>";
+                    })
+                    $("[name=categoryId]").append(str);
+                    dioPage(1);
+                }
+            })
+        })
+
+        function del(id) {
+            if(confirm("确定要删除吗？")){
+                $.ajax({
+                    url:"del.do",
+                    type:"post",
+                    data:{"id":id},
+                    dataType:"text",
+                    success:function (obj) {
+                        if(obj=="ok"){
+                            $("#"+id).remove();
+                        }
+                    }
+                })
+            }
+        }
+        function dioPage(pageNo) {
+            var title=$("[name=title]").val();
+            var categoryId=$("[name=categoryId]").val();
+            $.ajax({
+                url:"findAllDetail.do",
+                type:"post",
+                data:{"pageNo":pageNo,"title":title,"categoryId":categoryId},
+                dataType:"json",
+                success:function (obj) {
+                    var str="";
+                    $(".info").remove();
+                    $.each(obj.list,function (i,item) {
+                        str+="<tr class='info' id='"+item.id+"'>";
+                        str+="    <td>"+item.id+"</td>";
+                        str+="    <td>"+item.title+"</td>";
+                        str+="    <td>"+item.summary+"</td>";
+                        str+="    <td>"+item.author+"</td>";
+                        str+="    <td>"+item.createDate+"</td>";
+                        str+="    <td>"+item.updateDate+"</td>";
+                        str+="    <td><a href='update.html?id="+item.id+"'>修改</a> <a href='javascript:void(0);' onclick='del("+item.id+")'>删除</a></td>";
+                        str+="</tr>";
+                    })
+                        str+=" <tr class='info'>";
+                        str+="     <td colspan='7'>";
+                        str+="         <a href='javascript:void(0);' onclick='dioPage("+obj.firstPage+")'>首页</a>";
+                        str+="         <a href='javascript:void(0);' onclick='dioPage("+obj.prePage+")'>上一页</a>";
+                        str+="         <a href='javascript:void(0);' onclick='dioPage("+obj.nextPage+")'>下一页</a>";
+                        str+="         <a href='javascript:void(0);' onclick='dioPage("+obj.lastPage+")'>末页</a>";
+                        str+="     </td>";
+                        str+=" </tr>";
+                    $("table").append(str);
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+    <form>
+        选择分类<select name="categoryId"></select>
+        <input type="text" name="title"/> <input type="button" value="查询" onclick="dioPage(1)"/>
+    </form>
+    <table border="1px">
+        <tr>
+            <td>编号</td>
+            <td>标题</td>
+            <td>摘要</td>
+            <td>作者</td>
+            <td>创建时间</td>
+            <td>修改时间</td>
+            <td>操作 <a href="add.html">增加</a></td>
+        </tr>
+    </table>
+</body>
+</html>

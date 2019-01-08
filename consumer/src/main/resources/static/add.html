@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url:"findAllCategory.do",
+                type:"post",
+                data:{},
+                dataType:"json",
+                success:function (obj) {
+                    var str="";
+                    $("[name=categoryId]").empty();
+                    $.each(obj,function (i,item) {
+                        str+="<option value='"+item.id+"'>"+item.name+"</option>";
+                    })
+                    $("[name=categoryId]").append(str);
+                }
+            })
+
+            $(".addBtn").click(function () {
+                $.ajax({
+                    url:"add.do",
+                    type:"post",
+                    data:$("form").serialize(),
+                    dataType:"text",
+                    success:function (obj) {
+                       if(obj=="ok"){
+                        window.location.href="findAll.html";
+                       }
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <form>
+        <table border="1px">
+            <tr>
+                <td>标题</td>
+                <td><input type="text" name="title"/></td>
+            </tr>
+            <tr>
+                <td>分类</td>
+                <td><select name="categoryId"></select></td>
+            </tr>
+            <tr>
+                <td>摘要</td>
+                <td><input type="text" name="summary"/></td>
+            </tr>
+            <tr>
+                <td>作者</td>
+                <td><input type="text" name="author"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="button" value="提交" class="addBtn"/> <a href="findAll.html"><input type="button" value="返回"/></a></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

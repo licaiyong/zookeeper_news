@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var id=/\d+$/.exec(location.search)[0];
+
+            $.ajax({
+                url:"findById.do",
+                type:"post",
+                data:{"id":id},
+                dataType:"json",
+                success:function (obj) {
+                    $("[name=title]").val(obj.title);
+                    $("[name=summary]").val(obj.summary);
+                    $("[name=author]").val(obj.author);
+                     var str="";
+                    $.each(obj.category,function (i,item) {
+                        if(obj.categoryId==item.id){
+                            str+="<option value='"+item.id+"' selected>"+item.name+"</option>";
+                        }else{
+                            str+="<option value='"+item.id+"'>"+item.name+"</option>";
+                        }
+                    })
+                       $("[name=categoryId]").append(str);
+                }
+            })
+
+            $(".updateBtn").click(function () {
+                $.ajax({
+                    url:"update.do",
+                    type:"post",
+                    data:$("form").serialize(),
+                    dataType:"text",
+                    success:function (obj) {
+                       if(obj=="ok"){
+                        window.location.href="findAll.html";
+                       }
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <form>
+        <table border="1px">
+            <tr>
+                <td>标题</td>
+                <td><input type="text" name="title"/></td>
+            </tr>
+            <tr>
+                <td>分类</td>
+                <td><select name="categoryId"></select></td>
+            </tr>
+            <tr>
+                <td>摘要</td>
+                <td><input type="text" name="summary"/></td>
+            </tr>
+            <tr>
+                <td>作者</td>
+                <td><input type="text" name="author"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="button" value="提交" class="updateBtn"/> <a href="findAll.html"><input type="button" value="返回"/></a></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
